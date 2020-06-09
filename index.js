@@ -8,6 +8,61 @@
  As a result, the lessons for this function will pass *and* it will be available
  for you to use if you need it!
  */
+function createEmployeeRecord(arr) {
+    let record = {
+        firstName: arr[0],
+        familyName: arr[1],
+        title: arr[2],
+        payPerHour: arr[3],
+        timeInEvents: [],
+        timeOutEvents: []
+    }
+    return record;
+}
+
+function createEmployeeRecords(arrOfArrs) {
+    return arrOfArrs.map(function(arr) {
+        return createEmployeeRecord(arr);
+    })
+}
+
+function createTimeInEvent(dateStamp) {
+    let [date, hour] = dateStamp.split(' ')
+
+    this.timeInEvents.push({
+        type: "TimeIn",
+        hour: parseInt(hour, 10),
+        date,
+    })
+    return this
+}
+
+function createTimeOutEvent(dateStamp) {
+    let [date, hour] = dateStamp.split(' ')
+
+    this.timeOutEvents.push({
+        type: "TimeOut",
+        hour: parseInt(hour, 10),
+        date,
+    })
+    return this
+}
+
+function hoursWorkedOnDate(date) {
+    let timeInObj = this.timeInEvents.find(function(timeIn) {
+        return timeIn.date === date;
+    })
+    let timeOutObj = this.timeOutEvents.find(function(timeOut) {
+        return timeOut.date === date;
+    })
+    return (timeOutObj.hour - timeInObj.hour) / 100;
+}
+
+function wagesEarnedOnDate(date) {
+    let hours = hoursWorkedOnDate.call(this, date);
+    let wage = this.payPerHour;
+    return hours * wage;
+}
 
 let allWagesFor = function () {
     let eligibleDates = this.timeInEvents.map(function (e) {
@@ -19,4 +74,16 @@ let allWagesFor = function () {
     }.bind(this), 0) // <== Hm, why did we need to add bind() there? We'll discuss soon!
 
     return payable
+}
+
+function findEmployeeByFirstName(srcArr, empName) {
+    return srcArr.find(function(element) {
+        return element.firstName === empName;
+    });
+}
+
+function calculatePayroll(arrOfEmp) {
+    return arrOfEmp.reduce(function(total, emp) {
+        return total + allWagesFor.call(emp);
+    }, 0)
 }
